@@ -1,0 +1,83 @@
+Instructions to run ESP-IDF installer: 
+Option 01: (terminal)
+run "eim -help" which will list all options
+
+Option 02: (GUI/recommended)
+run "eim" to run the GUI of the ESP-IDF installer
+
+Instructions to run ESP-IDF (On vs-code):
+
+idf.py set-target esp32 // to initialize the project.
+idf.py build //to compile and build the project
+
+If the build completes successfully, you will be prompted to run:
+idf.py -p PORT flash //Flashes program onto ESP32
+(PORT is the ESP32’s serial connection)
+idf.py -p PORT monitor //Shows output of ESP32 program while running
+
+
+Known Issues:
+Q#1: finding PORT when needing it to run something like "idf.py -p PORT flash" 
+
+solution:
+Run "ls /dev/ttyUSB* /dev/ttyACM* 2>/dev/null", it'll return the port which is copied exactly as outputted.
+(i.e /dev/ttyUSB0)
+
+Q#2: How do I stop monitoring the program OR reset the program?
+
+solution:
+a. To reset the program to line 01, press EN / RESET while plugged in.
+b. To stop monitoring the output press "CTRL + C" or "CTRL + ]". NOTE: this will not stop the program
+
+
+C-MAKE HELPER:
+--> Explanation
+    In ESP-IDF, projects expect 2 types of CMakeLists.txt: root level and component level. 
+    Every C file requires a component CMakeLists.txt and every project requires 1 overarching CMakeLists.txt.
+
+--> NOTE
+    There are automatic C-MAKE generator extensions, although not really required because all component level
+    C-MAKE files look identical to an extent because idf_component_register() does the heavy lifting.
+
+1. The root level CMakeLists.txt
+
+Ex:
+cmake_minimum_required(VERSION 3.16)
+include($ENV{IDF_PATH}/tools/cmake/project.cmake)
+project(NAME_OF_FOLDER)
+
+What it does:
+compiles and points to ESP-IDF SDK and components. This is also where you would add another path 
+to more SDK/components/libraries
+
+2. Component level CMakeLists.txt
+Ex:
+idf_component_register(
+    SRCS "NAME_OF_C_FILE"
+    INCLUDE_DIRS "."
+    REQUIRES driver
+)
+
+What it does it mean:
+a. SRCS 
+    files to compile
+b. INCLUDE_DIRS:
+    directories with public headers --> Can #include them && "." = own folder access.
+c. PRIV_INCLUDE_DIRS: 
+    header directories used only by this component’s own sources.
+d. REQUIRES: 
+    components whose headers appear in your public headers.
+e. PRIV_REQUIRES:
+    components you only use inside your .c files
+
+
+
+C - File helper (documentation):
+1. Inter-Integrated Circuit (I2C) documentation: 
+https://docs.espressif.com/projects/esp-idf/en/stable/esp32/api-reference/peripherals/i2c.html#_CPPv423i2c_master_bus_config_t
+
+Relevant documentation: 
+#include "driver/i2c_master.h" //necessary import
+
+
+2. 
