@@ -76,8 +76,76 @@ C - File helper (documentation):
 1. Inter-Integrated Circuit (I2C) documentation: 
 https://docs.espressif.com/projects/esp-idf/en/stable/esp32/api-reference/peripherals/i2c.html#_CPPv423i2c_master_bus_config_t
 
-Relevant documentation: 
-#include "driver/i2c_master.h" //necessary import
+Relevant documentation to this project: 
+a. #include "driver/i2c_master.h" //necessary import
+
+b. Controls serial data line (SDA) and serial clock line (SCL)
+(Connects GPIO pins)
+
+c. I2C master controller vs I2C slave controller
+
+d. device vs master I2C bus:
+    1d. i2c_master_bus_config_t should be configured in main
+    2d. i2c_device_config_t should be configured per sensor
+
+//master struct
+i2c_master_bus_config_t bus_cfg = 
+{
+    .i2c_port = , 
+    .sda_io_num = #,
+    .scl_io_num = #,
+    .clk_source = I2C_CLK_SRC_DEFAULT,
+    .glitch_ignore_cnt = $,
+    .flags.enable_internal_pullup = true,
+};
+.i2c_port = sets the I2C port used by the controller
+
+.sda_io_num = sets the GPIO number for the serial data bus (SDA).
+
+.scl_io_num = sets the GPIO number for the serial clock bus (SCL).
+
+.clk_source = selects the source clock for I2C bus. (Can select between options listed in i2c_clock_source_t)
+
+.glitch_ignore_cnt = sets the glitch period of master bus, if the glitch period on the line is less than this value, 
+it can be filtered out, typically value is 7
+
+.flags.enable_internal_pullup = enables internal pullups. Note: This is not strong enough to pullup buses 
+under high-speed frequency. A suitable external pullup is recommended.
+
+Note: Other inputs to the struct are available including
+
+.intr_priority = sets the priority of the interrupt. If set to 0, 
+then the driver will use a interrupt with low or medium priority (priority level may be one of 1, 2 or 3), 
+otherwise use the priority indicated by i2c_master_bus_config_t::intr_priority. Please use the number 
+form (1, 2, 3) , not the bitmask form ((1<<1), (1<<2), (1<<3)).
+
+.trans_queue_depth = sets the depth of internal transfer queue. Only valid in asynchronous transaction.
+
+.allow_pd = configures if the driver allows the system to power down the peripheral in light sleep mode
+
+NOTE #2: In the case where you need multiple sensors and as such require more than 1 SDA/SCL input, 
+you can tether the signals together and the device automatically deals with them. (its possible and common)
+
+-----------------
+// device struct for I2C
+i2c_device_config_t cfg = {
+    .dev_addr_length = I2C_ADDR_BIT_LEN_7,
+    .device_address = addr,
+    .scl_speed_hz = 100000,
+};
+
+.dev_addr_length = configure the address bit length of the slave device. 
+It can be chosen from enumerator I2C_ADDR_BIT_LEN_7 or I2C_ADDR_BIT_LEN_10 (if supported).
+
+.device_address = sets the I2C device raw address. Please parse the device address to this 
+member directly. For example, the device address is 0x28, then parse 0x28 to 
+i2c_device_config_t::device_address, don't carry a write or read bit.
+
+.scl_speed_hz sets the SCL line frequency of this device.
+
+.scl_wait_us sets the SCL await time (in μs). Usually this value should not be very small 
+because slave stretch will happen in pretty long time (It's possible even stretch for 12 ms). 
+Set 0 means use default register value.
 
 
 2. 

@@ -2,6 +2,7 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 
+//
 esp_err_t bh1750_init(bh1750_t *sensor, i2c_master_bus_handle_t bus, uint8_t addr)
 {
     i2c_device_config_t cfg = {

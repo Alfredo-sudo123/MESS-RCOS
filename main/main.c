@@ -21,18 +21,22 @@ void app_main(void)
 
     i2c_master_bus_handle_t bus;
     ESP_ERROR_CHECK(i2c_new_master_bus(&bus_cfg, &bus));
-    
+
     //setting up bh1750 sensor light
     bh1750_t light;
     ESP_ERROR_CHECK(bh1750_init(&light, bus, BH1750_ADDR_LOW));
 
     while (1) {
         float lux;
-        if (bh1750_read_lux(&light, &lux) == ESP_OK) {
+        if (bh1750_read_lux(&light, &lux) == ESP_OK) 
+        {
             ESP_LOGI(TAG, "Light: %.1f lx", lux);
-        } else {
+        } 
+        else 
+        {
             ESP_LOGE(TAG, "BH1750 read failed");
         }
         vTaskDelay(pdMS_TO_TICKS(1000));
     }
+
 }
