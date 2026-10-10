@@ -30,7 +30,9 @@ a. To reset the program to line 01, press EN / RESET while plugged in.
 b. To stop monitoring the output press "CTRL + C" or "CTRL + ]". NOTE: this will not stop the program
 
 
-C-MAKE HELPER:
+C-MAKE HELPER: (C-MAKE documentation)
+https://docs.espressif.com/projects/esp-idf/en/v3.3/api-guides/build-system-cmake.html?highlight=cmakelists%20txt
+
 --> Explanation
     In ESP-IDF, projects expect 2 types of CMakeLists.txt: root level and component level. 
     Every C file requires a component CMakeLists.txt and every project requires 1 overarching CMakeLists.txt.
