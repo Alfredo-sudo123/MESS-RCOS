@@ -2,8 +2,6 @@
 # install.packages(c("shiny","tidyverse", "jsonlite")) 
 
 #troubleshooting:
-# getwd()
-# setwd("/Users/username/Documents/my_project")
 
 #libraries
 library(shiny)
